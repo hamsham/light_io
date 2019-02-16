@@ -20,7 +20,6 @@ Sample application can be found within the "test" directory.
 
 ## TODO
 - [ ] Create functions for moving files and folders.
-- [ ] Setup builds within Travis-CI for continuous integration.
 
 
 ## Q&A
