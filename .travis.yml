@@ -33,5 +33,5 @@ before_script:
 
 script:
   - cmake --build . --config Release --parallel
-  - ctest
+  - ctest -VV
 
