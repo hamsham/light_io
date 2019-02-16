@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
     ++testId;
     if (!path_does_exist(argv[0], PATH_TYPE_FILE))
     {
-        fprintf(stderr, "Unable to validate the current program path \"%s.\"\n", tmpDir);
+        fprintf(stderr, "Unable to validate the current program path \"%s.\"\n", argv[0]);
         ret = testId;
         goto end;
     }
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
     }
 
 
-    // Test that directory trees can be enumerated    ++testId;    ++testId;
+    // Test that directory trees can be enumerated
     ++testId;
     numChildPaths = path_count_entries(pCwd, false, NULL);
     printf("File Listing of %u items:", numChildPaths);
