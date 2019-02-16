@@ -32,6 +32,6 @@ before_script:
 
 
 script:
-  cmake --build . --config Release --parallel
-  ctest
+  - cmake --build . --config Release --parallel
+  - ctest
 
