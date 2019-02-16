@@ -53,14 +53,14 @@ bool path_does_exist(
     {
         return false;
     }
-        
+
     switch (pathType)
     {
         case PATH_TYPE_REGULAR:
-            return (attribs & FILE_ATTRIBUTE_NORMAL) != 0;
+            return (attribs & (FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_ARCHIVE)) != 0;
         
         case PATH_TYPE_FILE:
-            return (attribs & FILE_ATTRIBUTE_NORMAL) != 0 || (attribs & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
+            return (attribs & (FILE_ATTRIBUTE_NORMAL | FILE_ATTRIBUTE_REPARSE_POINT | FILE_ATTRIBUTE_ARCHIVE)) != 0;
         
         case PATH_TYPE_LINK:
             return (attribs & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
@@ -389,7 +389,7 @@ char** path_list(
     while (FindNextFile(pEntry, &pData) != 0)
     {
         // Portability: "dotfiles" are *NIX only, but we'll block them in Windows
-        if ((!listHidden && pData.cFileName[0] == '.')
+        if ((!listHidden && (pData.cFileName[0] == '.' || (GetFileAttributesA(pData.cFileName) & FILE_ATTRIBUTE_HIDDEN)))
         || strcmp(pData.cFileName, ".") == 0
         || strcmp(pData.cFileName, "..") == 0)
         {
@@ -456,7 +456,7 @@ unsigned path_count_entries(
     while (FindNextFile(pEntry, &pData) != 0)
     {
         // Portability: "dotfiles" are *NIX only, but we'll block them in Windows
-        if ((!listHidden && pData.cFileName[0] == '.')
+        if ((!listHidden && (pData.cFileName[0] == '.' || (GetFileAttributesA(pData.cFileName) & FILE_ATTRIBUTE_HIDDEN)))
         || strcmp(pData.cFileName, ".") == 0
         || strcmp(pData.cFileName, "..") == 0)
         {
