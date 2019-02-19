@@ -517,3 +517,51 @@ char* path_join(
     */
     return pTemp;
 }
+
+
+
+/*-----------------------------------------------------------------------------
+ * Move a file or folder
+-----------------------------------------------------------------------------*/
+int path_move(
+    const char* const restrict pFrom,
+    const char* const restrict pTo,
+    const bool overwrite)
+{
+    // move directories
+    if (path_does_exist(pFrom, PATH_TYPE_FOLDER))
+    {
+        if (path_does_exist(pTo, PATH_TYPE_FOLDER))
+        {
+            if (overwrite)
+            {
+                path_remove(pTo, true, false);
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        return MoveFileEx(pFrom, pTo, MOVE_FILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
+    }
+    else if (path_does_exist(pFrom, PATH_TYPE_FILE))
+    {
+        if (path_does_exist(pTo, PATH_TYPE_FILE))
+        {
+            if (overwrite)
+            {
+                path_remove(pTo, false, false);
+            }
+            else
+            {
+                return -2;
+            }
+        }
+
+        return MoveFileEx(pFrom, pTo, MOVE_FILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
+    }
+
+    fprintf(stderr, "Error: cannot move \"%s\" to \"%s\"", pFrom, pTo);
+    return -3;
+}

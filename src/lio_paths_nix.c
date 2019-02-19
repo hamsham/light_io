@@ -73,7 +73,7 @@ bool path_does_exist(
             return S_ISREG(fileMode) != 0;
         
         case PATH_TYPE_FILE:
-            return S_ISREG(fileMode) != 0 || S_ISLNK(fileMode) != 0;
+             return S_ISREG(fileMode) != 0 || S_ISLNK(fileMode) != 0 || S_ISBLK(fileMode) || S_ISFIFO(fileMode) != 0 || S_ISCHR(fileMode) != 0;
         
         case PATH_TYPE_LINK:
             return S_ISLNK(fileMode) != 0;
@@ -637,4 +637,52 @@ char* path_join(
     return ret;
     */
     return pTemp;
+}
+
+
+
+/*-----------------------------------------------------------------------------
+ * Move a file or folder
+-----------------------------------------------------------------------------*/
+int path_move(
+    const char* const restrict pFrom,
+    const char* const restrict pTo,
+    const bool overwrite)
+{
+    // move directories
+    if (path_does_exist(pFrom, PATH_TYPE_FOLDER))
+    {
+        if (path_does_exist(pTo, PATH_TYPE_FOLDER))
+        {
+            if (overwrite)
+            {
+                path_remove(pTo, true, false);
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        return rename(pFrom, pTo);
+    }
+    else if (path_does_exist(pFrom, PATH_TYPE_FILE))
+    {
+        if (path_does_exist(pTo, PATH_TYPE_FILE))
+        {
+            if (overwrite)
+            {
+                path_remove(pTo, false, false);
+            }
+            else
+            {
+                return -2;
+            }
+        }
+
+        return rename(pFrom, pTo);
+    }
+
+    fprintf(stderr, "Error: cannot move \"%s\" to \"%s\"", pFrom, pTo);
+    return -3;
 }

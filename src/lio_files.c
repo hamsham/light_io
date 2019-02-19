@@ -16,6 +16,9 @@
 
 
 
+/*-----------------------------------------------------------------------------
+ * Stream data into a file
+-----------------------------------------------------------------------------*/
 static bool _fileio_stream_into_file(
     const char* const from,
     const char* const to,
@@ -72,6 +75,9 @@ static bool _fileio_stream_into_file(
 
 
 
+/*-----------------------------------------------------------------------------
+ * Copy data from one file to another
+-----------------------------------------------------------------------------*/
 bool fileio_copy(
     const char* const restrict from,
     const char* const restrict to,
@@ -100,6 +106,9 @@ bool fileio_copy(
 
 
 
+/*-----------------------------------------------------------------------------
+ * Concatenate two files
+-----------------------------------------------------------------------------*/
 bool fileio_concat(
     const char* const restrict fileA,
     const char* const restrict fileB,
