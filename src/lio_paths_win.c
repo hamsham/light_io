@@ -399,7 +399,7 @@ int path_move(
             }
         }
 
-        return MoveFileEx(pFrom, pTo, MOVE_FILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
+        return MoveFileEx(pFrom, pTo, MOVEFILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
     }
     else if (path_does_exist(pFrom, PATH_TYPE_FILE))
     {
@@ -415,7 +415,7 @@ int path_move(
             }
         }
 
-        return MoveFileEx(pFrom, pTo, MOVE_FILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
+        return MoveFileEx(pFrom, pTo, MOVE_FILEWRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
     }
 
     fprintf(stderr, "Error: cannot move \"%s\" to \"%s\"", pFrom, pTo);
