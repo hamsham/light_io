@@ -60,7 +60,8 @@ set(SOURCE_DIR src)
 
 set(SOURCE_FILES
     ${SOURCE_DIR}/lio_files.c
-    ${SOURCE_DIR}/lio_utils.c)
+    ${SOURCE_DIR}/lio_utils.c
+    ${SOURCE_DIR}/lio_paths.c)
 
 
 
