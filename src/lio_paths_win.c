@@ -175,12 +175,12 @@ bool path_remove(
         return true;
     }
 
-    size_t dirLen = strlen(path) + 2; // +2 NULL characters are required for SHFileOperation.
-    char* tmpDir = (char*)malloc(dirLen);
+    size_t dirLen = strlen(path); // +2 NULL characters are required for SHFileOperation.
+    char* tmpDir = (char*)malloc(dirLen + 2);
     
-    memcpy(tmpDir, path, dirLen-2);
-    tmpDir[dirLen-1] = '\0';
-    tmpDir[dirLen-2] = '\0';
+    memcpy(tmpDir, path, dirLen);
+    tmpDir[dirLen+0] = '\0';
+    tmpDir[dirLen+1] = '\0';
 
     FILEOP_FLAGS opFlags = FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
     if (!recurse)
@@ -188,27 +188,27 @@ bool path_remove(
         opFlags |= FOF_NORECURSION;
     }
 
-  SHFILEOPSTRUCT pathOp = {
-    NULL,
-    FO_DELETE,
-    tmpDir,
-    "",
-    opFlags,
-    FALSE,
-    NULL,
-    ""
-  };
+    SHFILEOPSTRUCT pathOp = {
+        NULL,
+        FO_DELETE,
+        tmpDir,
+        "\0\0",
+        opFlags,
+        FALSE,
+        NULL,
+        ""
+    };
   
-  int ret = SHFileOperation(&pathOp);
-  free(tmpDir);
+    int ret = SHFileOperation(&pathOp);
+    free(tmpDir);
 
-  if (ret != 0)
-  {
-      fprintf(stderr, "Encountered error %X while removing the directory \"%s\".\n", ret, path);
-      return false;
-  }
+    if (ret != 0)
+    {
+        fprintf(stderr, "Encountered error %X while removing the directory \"%s\".\n", ret, path);
+        return false;
+    }
   
-  return true;
+    return true;
 }
 
 

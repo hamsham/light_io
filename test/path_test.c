@@ -16,6 +16,7 @@ int main(int argc, char* argv[])
     unsigned i = 0u;
     char* newPath = NULL;
     char* tmpDir = NULL;
+    char* tmpDirAbs = NULL;
 
     // Test that files can be found on the local file system
     ++testId;
@@ -133,19 +134,21 @@ int main(int argc, char* argv[])
 
     // Test that paths can be removed from the local file system
     ++testId;
-    if (!path_remove("super", true, false))
+    tmpDirAbs = path_join(pCwd, "super");
+    if (!path_remove(tmpDirAbs, true, false))
     {
-        fprintf(stderr, "Unable to remove the directory tree \"%s.\"\n", tmpDir);
+        fprintf(stderr, "Unable to remove the directory tree \"%s.\"\n", tmpDirAbs);
         ret = testId;
         goto end;
     }
     else
     {
-        printf("Successfully removed a directory tree:\n\t%s\n", tmpDir);
+        printf("Successfully removed a directory tree:\n\t%s\n", tmpDirAbs);
     }
 
     end:
     utils_str_destroy(newPath);
+    path_destroy(tmpDirAbs);
     path_destroy(tmpDir);
     paths_destroy(pSiblings, numChildPaths);
     path_destroy(pExc);
