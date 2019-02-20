@@ -312,6 +312,28 @@ static inline bool path_filter_dirs(const char* const dirPath)
 
 
 
+/**
+ * @brief Move a file or directory on the local filesystem.
+ *
+ * @param pFrom
+ * A character string containing the old path which will be moved.
+ *
+ * @param pTo
+ * A character string containing the new path.
+ *
+ * @param overwrite
+ * A Boolean flag which will allow for existing files or folders to be
+ * overwritten
+ *
+ * @return 0 on success or nonzero if an error occurred.
+ */
+int path_move(
+    const char* const pFrom,
+    const char* const pTo,
+    const bool overwrite);
+
+
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

@@ -17,11 +17,6 @@ across Windows and *Nix-based operating systems.
 Sample application can be found within the "test" directory.
 
 
-
-## TODO
-- [ ] Create functions for moving files and folders.
-
-
 ## Q&A
 For any inquiries or pull requests, please email mileslacey@gmail.com. Bugs and
 other issues can be added [here](https://github.com/hamsham/light_io/issues)

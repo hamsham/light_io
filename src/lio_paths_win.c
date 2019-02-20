@@ -118,41 +118,6 @@ char* path_resolve(const char *const restrict pInPath)
 
 
 /*-----------------------------------------------------------------------------
- *
------------------------------------------------------------------------------*/
-char* path_copy(const char* const restrict pPath)
-{
-    return utils_str_copy(pPath, 0);
-}
-
-
-
-/*-----------------------------------------------------------------------------
- * Destroy dynamically created paths
------------------------------------------------------------------------------*/
-void path_destroy(char* const pPath)
-{
-    utils_str_destroy(pPath);
-}
-
-
-
-/*-----------------------------------------------------------------------------
- * Destroy dynamically created arrays of paths
------------------------------------------------------------------------------*/
-void paths_destroy(char** const restrict pPaths, unsigned numPaths)
-{
-    while (numPaths --> 0)
-    {
-        free(pPaths[numPaths]);
-    }
-
-    free(pPaths);
-}
-
-
-
-/*-----------------------------------------------------------------------------
  * File Removal
 -----------------------------------------------------------------------------*/
 /*-------------------------------------
@@ -270,82 +235,6 @@ bool path_mkdirs(const char* const restrict pPath)
     utils_str_destroy(pTmpPath);
     
     return ret == 0;
-}
-
-
-
-/*-----------------------------------------------------------------------------
- * Basename
------------------------------------------------------------------------------*/
-char* path_basename(const char* const restrict pPath)
-{
-    if (!pPath)
-    {
-        return NULL;
-    }
-
-    const size_t numChars = strlen(pPath);
-    size_t iter = numChars;
-
-    while (iter --> 0)
-    {
-        const char c = pPath[iter];
-
-        if (c == PATH_SEPARATOR)
-        {
-            break;
-        }
-    }
-
-    ++iter;
-
-    if (iter == numChars)
-    {
-        return utils_str_fmt("\0");
-    }
-
-    return utils_str_copy(pPath+iter, 0);
-}
-
-
-
-/*-----------------------------------------------------------------------------
- * dirname
------------------------------------------------------------------------------*/
-char* path_dirname(const char* const restrict pPath)
-{
-    if (!pPath)
-    {
-        return NULL;
-    }
-
-    const size_t numChars = strlen(pPath);
-    size_t iter = numChars;
-
-    while (iter --> 0)
-    {
-        const char c = pPath[iter];
-
-        if (c == PATH_SEPARATOR)
-        {
-            break;
-        }
-    }
-
-    if (iter == numChars)
-    {
-        return utils_str_fmt("\0");
-    }
-
-    char* const ret = (char*) malloc(iter+1);
-    if (!ret)
-    {
-        return NULL;
-    }
-
-    ret[iter] = '\0';
-
-    return strncpy(ret, pPath, iter);
 }
 
 
@@ -487,33 +376,48 @@ unsigned path_count_entries(
 
 
 
-char* path_join(
-    const char* const restrict pDirName,
-    const char* const restrict pBaseName)
+/*-----------------------------------------------------------------------------
+ * Move a file or folder
+-----------------------------------------------------------------------------*/
+int path_move(
+    const char* const restrict pFrom,
+    const char* const restrict pTo,
+    const bool overwrite)
 {
-    // don't trust the caller.
-    if (!pDirName)
+    // move directories
+    if (path_does_exist(pFrom, PATH_TYPE_FOLDER))
     {
-        return !pBaseName ? utils_str_copy("", 0) : utils_str_copy(pBaseName, 0);
+        if (path_does_exist(pTo, PATH_TYPE_FOLDER))
+        {
+            if (overwrite)
+            {
+                path_remove(pTo, true, false);
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        return MoveFileEx(pFrom, pTo, MOVEFILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
+    }
+    else if (path_does_exist(pFrom, PATH_TYPE_FILE))
+    {
+        if (path_does_exist(pTo, PATH_TYPE_FILE))
+        {
+            if (overwrite)
+            {
+                path_remove(pTo, false, false);
+            }
+            else
+            {
+                return -2;
+            }
+        }
+
+        return MoveFileEx(pFrom, pTo, MOVEFILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
     }
 
-    if (!pBaseName)
-    {
-        return utils_str_copy("", 0);
-    }
-
-    char* const pTemp = utils_str_fmt("%s%c%s", pDirName, PATH_SEPARATOR, pBaseName);
-    if (!pTemp)
-    {
-        fprintf(stderr, "Unable to join the paths \"%s\" and \"%s\".\n", pDirName, pBaseName);
-        return NULL;
-    }
-
-    /*
-    char* const ret = path_resolve(pTemp);
-    utils_str_destroy(pTemp);
-
-    return ret;
-    */
-    return pTemp;
+    fprintf(stderr, "Error: cannot move \"%s\" to \"%s\"\n", pFrom, pTo);
+    return -3;
 }

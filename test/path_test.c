@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        printf("Successfully created subdirectories:\n\t%s\n", tmpDir);
+        printf("Successfully joined subdirectory string:\n\t%s\n", tmpDir);
     }
 
     // Test that paths can be recursively created
@@ -132,9 +132,22 @@ int main(int argc, char* argv[])
         printf("Successfully validated the directory tree:\n\t%s\n", tmpDir);
     }
 
+    // Test that paths can be moved
+    ++testId;
+    if (path_move("super", "duper", false) != 0)
+    {
+        fprintf(stderr, "Unable to move a directory: \"%s\" -> \"%s\"\n", "super", "duper");
+        ret = testId;
+        goto end;
+    }
+    else
+    {
+        printf("Successfully moved a directory:\n\t\"%s\" -> \"%s\"\n", "super", "duper");
+    }
+
     // Test that paths can be removed from the local file system
     ++testId;
-    tmpDirAbs = path_join(pCwd, "super");
+    tmpDirAbs = path_join(pCwd, "duper");
     if (!path_remove(tmpDirAbs, true, false))
     {
         fprintf(stderr, "Unable to remove the directory tree \"%s.\"\n", tmpDirAbs);
