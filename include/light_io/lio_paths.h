@@ -114,7 +114,7 @@ void paths_destroy(char** const pPaths, unsigned numPaths);
  * @brief Delete an entry from the local filesystem.
  *
  * This function can be used to remove individual files, folders, or entire
- * directory trees.
+ * directory trees. For complete OS portability, absolute paths must be used.
  *
  * @param path
  * A pointer to a constant string which represents a path to be removed from
