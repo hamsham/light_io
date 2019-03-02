@@ -384,6 +384,8 @@ int path_move(
     const char* const restrict pTo,
     const bool overwrite)
 {
+    int ret = 0;
+
     // move directories
     if (path_does_exist(pFrom, PATH_TYPE_FOLDER))
     {
@@ -399,7 +401,8 @@ int path_move(
             }
         }
 
-        return MoveFileEx(pFrom, pTo, MOVEFILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
+        ret = MoveFileEx(pFrom, pTo, MOVEFILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
+        return ret ? 0 : -2;
     }
     else if (path_does_exist(pFrom, PATH_TYPE_FILE))
     {
@@ -411,13 +414,14 @@ int path_move(
             }
             else
             {
-                return -2;
+                return -3;
             }
         }
 
-        return MoveFileEx(pFrom, pTo, MOVEFILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
+        ret = MoveFileEx(pFrom, pTo, MOVEFILE_WRITE_THROUGH | MOVEFILE_FAIL_IF_NOT_TRACKABLE | MOVEFILE_COPY_ALLOWED);
+        return ret ? 0 : -4;
     }
 
     fprintf(stderr, "Error: cannot move \"%s\" to \"%s\"\n", pFrom, pTo);
-    return -3;
+    return -5;
 }

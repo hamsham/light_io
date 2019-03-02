@@ -14,9 +14,10 @@ int main(int argc, char* argv[])
     unsigned numChildPaths = 0u;
     char** pSiblings = NULL;
     unsigned i = 0u;
-    char* newPath = NULL;
-    char* tmpDir = NULL;
-    char* tmpDirAbs = NULL;
+    char* tmpDirStr = NULL;
+    char* superDir = NULL;
+    char* duperDir = NULL;
+    char* newSubDir = NULL;
 
     // Test that files can be found on the local file system
     ++testId;
@@ -80,8 +81,8 @@ int main(int argc, char* argv[])
 
     // Test that paths can be concatenated
     ++testId;
-    newPath = utils_str_fmt("super%ccali%cfragi%clistic%cexpi%cali%cdocious", PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR);
-    if (!newPath)
+    tmpDirStr = utils_str_fmt("super%ccali%cfragi%clistic%cexpi%cali%cdocious", PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR);
+    if (!tmpDirStr)
     {
         fprintf(stderr, "Unable to create a new path string.\n");
         ret = testId;
@@ -89,80 +90,82 @@ int main(int argc, char* argv[])
     }
     else
     {
-        printf("Sub-directories to be created:\n\t%s\n", newPath);
+        printf("Sub-directories to be created:\n\t%s\n", tmpDirStr);
     }
 
     // Test that path strings can be concatenated
     ++testId;
-    tmpDir = path_join(pCwd, newPath);
-    if (!tmpDir)
+    newSubDir = path_join(pCwd, tmpDirStr);
+    if (!newSubDir)
     {
-        fprintf(stderr, "Unable to join the file paths \"%s\" and \"%s.\"\n", pCwd, newPath);
+        fprintf(stderr, "Unable to join the file paths \"%s\" and \"%s.\"\n", pCwd, tmpDirStr);
         ret = testId;
         goto end;
     }
     else
     {
-        printf("Successfully joined subdirectory string:\n\t%s\n", tmpDir);
+        printf("Successfully joined subdirectory string:\n\t%s\n", newSubDir);
     }
 
     // Test that paths can be recursively created
     ++testId;
-    if (!path_mkdirs(tmpDir))
+    if (!path_mkdirs(newSubDir))
     {
-        fprintf(stderr, "Unable to create the directory tree \"%s.\"", tmpDir);
+        fprintf(stderr, "Unable to create the directory tree \"%s.\"", newSubDir);
         ret = testId;
         goto end;
     }
     else
     {
-        printf("Successfully created the directory tree:\n\t%s\n", tmpDir);
+        printf("Successfully created the directory tree:\n\t%s\n", newSubDir);
     }
 
     // Test that paths can be identified on the local file system
     ++testId;
-    if (!path_does_exist(tmpDir, PATH_TYPE_FOLDER))
+    if (!path_does_exist(newSubDir, PATH_TYPE_FOLDER))
     {
-        fprintf(stderr, "Unable to validate the directory tree \"%s.\"\n", tmpDir);
+        fprintf(stderr, "Unable to validate the directory tree \"%s.\"\n", newSubDir);
         ret = testId;
         goto end;
     }
     else
     {
-        printf("Successfully validated the directory tree:\n\t%s\n", tmpDir);
+        printf("Successfully validated the directory tree:\n\t%s\n", newSubDir);
     }
 
     // Test that paths can be moved
     ++testId;
-    if (path_move("super", "duper", false) != 0)
+    superDir = path_join(pCwd, "super");
+    duperDir = path_join(pCwd, "duper");
+    if (!superDir || !duperDir || path_move(superDir, duperDir, false) != 0)
     {
-        fprintf(stderr, "Unable to move a directory: \"%s\" -> \"%s\"\n", "super", "duper");
+        fprintf(stderr, "Unable to move a directory: \"%s%c%s\" -> \"%s%c%s\"\n", pCwd, PATH_SEPARATOR, "super", pCwd, PATH_SEPARATOR, "duper");
         ret = testId;
         goto end;
     }
     else
     {
-        printf("Successfully moved a directory:\n\t\"%s\" -> \"%s\"\n", "super", "duper");
+        printf("Successfully moved a directory:\n\t\"%s%c%s\" -> \"%s%c%s\"\n", pCwd, PATH_SEPARATOR, "super", pCwd, PATH_SEPARATOR, "duper");
     }
 
     // Test that paths can be removed from the local file system
     ++testId;
-    tmpDirAbs = path_join(pCwd, "duper");
-    if (!path_remove(tmpDirAbs, true, false))
+    if (!path_remove(duperDir, true, false))
     {
-        fprintf(stderr, "Unable to remove the directory tree \"%s.\"\n", tmpDirAbs);
+        fprintf(stderr, "Unable to remove the directory tree \"%s.\"\n", duperDir);
         ret = testId;
         goto end;
     }
     else
     {
-        printf("Successfully removed a directory tree:\n\t%s\n", tmpDirAbs);
+        printf("Successfully removed a directory tree:\n\t%s\n", duperDir);
     }
 
     end:
-    utils_str_destroy(newPath);
-    path_destroy(tmpDirAbs);
-    path_destroy(tmpDir);
+    utils_str_destroy(tmpDirStr);
+    path_destroy(duperDir);
+    path_destroy(superDir);
+    path_destroy(newSubDir);
     paths_destroy(pSiblings, numChildPaths);
     path_destroy(pExc);
     path_destroy(pCwd);
