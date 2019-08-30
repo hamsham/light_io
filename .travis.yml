@@ -31,5 +31,5 @@ before_script:
 
 script:
   - cmake --build . --config Release --parallel
-  - ctest -VV
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then ctest -VV; fi
 
