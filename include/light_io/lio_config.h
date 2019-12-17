@@ -1,6 +1,6 @@
 
-#ifndef VTK_UTILS_CONFIG_H
-#define VTK_UTILS_CONFIG_H
+#ifndef LIGHT_IO_CONFIG_H
+#define LIGHT_IO_CONFIG_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,9 +18,9 @@ extern "C" {
  || defined(_M_IA64) \
  || defined(__ia64__) \
  || defined(__aarch64__)
-    #define VTK_UTILS_SYS_ARCH 64
+    #define LIGHT_IO_SYS_ARCH 64
 #else
-    #define VTK_UTILS_SYS_ARCH 32
+    #define LIGHT_IO_SYS_ARCH 32
 #endif
 
 
@@ -28,10 +28,20 @@ extern "C" {
 /**
  * @brief Shared library setup
  */
-#if defined(VTK_UTILS_BUILD_SHARED)
-    #define VTK_API __attribute__((__visibility__("default")))
+#if defined(LIGHT_IO_BUILD_SHARED)
+    #if defined(__GNUC__)
+        #define LIO_API __attribute__((__visibility__("default")))
+    #elif defined(_MSC_VER)
+        #define LIO_API __declspec(dllexport)
+    #endif
+#elif defined(LIGHT_IO_API_SHARED)
+    #if defined(_MSC_VER)
+        #define LIO_API __declspec(dllimport)
+    #else
+        #define LIO_API
+    #endif
 #else
-    #define VTK_API
+    #define LIO_API
 #endif
 
 
@@ -40,4 +50,4 @@ extern "C" {
 } /* extern "C" */
 #endif
 
-#endif /* VTK_UTILS_CONFIG_H */
+#endif /* LIGHT_IO_CONFIG_H */

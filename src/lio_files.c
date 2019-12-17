@@ -19,7 +19,7 @@
 /*-----------------------------------------------------------------------------
  * Stream data into a file
 -----------------------------------------------------------------------------*/
-static bool _fileio_stream_into_file(
+static bool _lio_file_stream_into_file(
     const char* const from,
     const char* const to,
     const size_t chunkSize,
@@ -78,7 +78,7 @@ static bool _fileio_stream_into_file(
 /*-----------------------------------------------------------------------------
  * Copy data from one file to another
 -----------------------------------------------------------------------------*/
-bool fileio_copy(
+bool lio_file_copy(
     const char* const restrict from,
     const char* const restrict to,
     const bool overwrite)
@@ -89,19 +89,19 @@ bool fileio_copy(
         return false;
     }
 
-    if (!path_does_exist(from, PATH_TYPE_FILE))
+    if (!lio_path_does_exist(from, LIO_PATH_TYPE_FILE))
     {
         fprintf(stderr, "Unable to copy file \"%s\". File does not exist.\n", from);
         return false;
     }
 
-    if (path_does_exist(to, PATH_TYPE_FILE) && !overwrite)
+    if (lio_path_does_exist(to, LIO_PATH_TYPE_FILE) && !overwrite)
     {
         fprintf(stderr, "Cannot copy \"%s\" to \"%s\". File exists at destination.\n", from, to);
         return false;
     }
 
-    return _fileio_stream_into_file(from, to, FILE_IO_DEFAULT_CHUNK_SIZE, false);
+    return _lio_file_stream_into_file(from, to, LIO_FILE_DEFAULT_CHUNK_SIZE, false);
 }
 
 
@@ -109,7 +109,7 @@ bool fileio_copy(
 /*-----------------------------------------------------------------------------
  * Concatenate two files
 -----------------------------------------------------------------------------*/
-bool fileio_concat(
+bool lio_file_concat(
     const char* const restrict fileA,
     const char* const restrict fileB,
     const char* const restrict outFile,
@@ -121,26 +121,26 @@ bool fileio_concat(
         return false;
     }
 
-    if (!path_does_exist(fileA, PATH_TYPE_FILE))
+    if (!lio_path_does_exist(fileA, LIO_PATH_TYPE_FILE))
     {
         fprintf(stderr, "Unable to read file for concatenation \"%s\". File does not exist.\n", fileA);
         return false;
     }
 
-    if (!path_does_exist(fileB, PATH_TYPE_FILE))
+    if (!lio_path_does_exist(fileB, LIO_PATH_TYPE_FILE))
     {
         fprintf(stderr, "Unable to read file for concatenation \"%s\". File does not exist.\n", fileB);
         return false;
     }
 
-    if (path_does_exist(outFile, PATH_TYPE_FILE) && !overwrite)
+    if (lio_path_does_exist(outFile, LIO_PATH_TYPE_FILE) && !overwrite)
     {
         fprintf(stderr, "Unable to write concatenated files to \"%s\". File already exists.\n", outFile);
         return false;
     }
 
     return
-        (_fileio_stream_into_file(fileA, outFile, FILE_IO_DEFAULT_CHUNK_SIZE, false) &&
-        _fileio_stream_into_file(fileB, outFile, FILE_IO_DEFAULT_CHUNK_SIZE, true))
-        || path_remove(outFile, false, false);
+        (_lio_file_stream_into_file(fileA, outFile, LIO_FILE_DEFAULT_CHUNK_SIZE, false) &&
+        _lio_file_stream_into_file(fileB, outFile, LIO_FILE_DEFAULT_CHUNK_SIZE, true))
+        || lio_path_remove(outFile, false, false);
 }

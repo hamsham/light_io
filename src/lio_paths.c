@@ -23,9 +23,9 @@
 /*-----------------------------------------------------------------------------
  * Copy a path string
 -----------------------------------------------------------------------------*/
-char* path_copy(const char* const restrict pPath)
+char* lio_path_copy(const char* const restrict pPath)
 {
-    return utils_str_copy(pPath, 0);
+    return lio_utils_str_copy(pPath, 0);
 }
 
 
@@ -33,9 +33,9 @@ char* path_copy(const char* const restrict pPath)
 /*-----------------------------------------------------------------------------
  * Destroy dynamically created paths
 -----------------------------------------------------------------------------*/
-void path_destroy(char* const pPath)
+void lio_path_destroy(char* const pPath)
 {
-    utils_str_destroy(pPath);
+    lio_utils_str_destroy(pPath);
 }
 
 
@@ -43,7 +43,7 @@ void path_destroy(char* const pPath)
 /*-----------------------------------------------------------------------------
  * Destroy dynamically created arrays of paths
 -----------------------------------------------------------------------------*/
-void paths_destroy(char** const restrict pPaths, unsigned numPaths)
+void lio_paths_destroy(char** const restrict pPaths, unsigned numPaths)
 {
     while (numPaths --> 0)
     {
@@ -58,7 +58,7 @@ void paths_destroy(char** const restrict pPaths, unsigned numPaths)
 /*-----------------------------------------------------------------------------
  * Basename
 -----------------------------------------------------------------------------*/
-char* path_basename(const char* const restrict pPath)
+char* lio_path_basename(const char* const restrict pPath)
 {
     if (!pPath)
     {
@@ -72,7 +72,7 @@ char* path_basename(const char* const restrict pPath)
     {
         const char c = pPath[iter];
 
-        if (c == PATH_SEPARATOR)
+        if (c == LIO_PATH_SEP)
         {
             break;
         }
@@ -82,10 +82,10 @@ char* path_basename(const char* const restrict pPath)
 
     if (iter == numChars)
     {
-        return utils_str_fmt("\0");
+        return lio_utils_str_fmt("\0");
     }
 
-    return utils_str_copy(pPath+iter, 0);
+    return lio_utils_str_copy(pPath+iter, 0);
 }
 
 
@@ -93,7 +93,7 @@ char* path_basename(const char* const restrict pPath)
 /*-----------------------------------------------------------------------------
  * dirname
 -----------------------------------------------------------------------------*/
-char* path_dirname(const char* const restrict pPath)
+char* lio_path_dirname(const char* const restrict pPath)
 {
     if (!pPath)
     {
@@ -107,7 +107,7 @@ char* path_dirname(const char* const restrict pPath)
     {
         const char c = pPath[iter];
 
-        if (c == PATH_SEPARATOR)
+        if (c == LIO_PATH_SEP)
         {
             break;
         }
@@ -115,7 +115,7 @@ char* path_dirname(const char* const restrict pPath)
 
     if (iter == numChars)
     {
-        return utils_str_fmt("\0");
+        return lio_utils_str_fmt("\0");
     }
 
     char* const ret = (char*) malloc(iter+1);
@@ -134,22 +134,22 @@ char* path_dirname(const char* const restrict pPath)
 /*-----------------------------------------------------------------------------
  * Join two paths
 -----------------------------------------------------------------------------*/
-char* path_join(
+char* lio_path_join(
     const char* const restrict pDirName,
     const char* const restrict pBaseName)
 {
     // don't trust the caller.
     if (!pDirName)
     {
-        return !pBaseName ? utils_str_copy("", 0) : utils_str_copy(pBaseName, 0);
+        return !pBaseName ? lio_utils_str_copy("", 0) : lio_utils_str_copy(pBaseName, 0);
     }
 
     if (!pBaseName)
     {
-        return utils_str_copy("", 0);
+        return lio_utils_str_copy("", 0);
     }
 
-    char* const pTemp = utils_str_fmt("%s%c%s", pDirName, PATH_SEPARATOR, pBaseName);
+    char* const pTemp = lio_utils_str_fmt("%s%c%s", pDirName, LIO_PATH_SEP, pBaseName);
     if (!pTemp)
     {
         fprintf(stderr, "Unable to join the paths \"%s\" and \"%s\".\n", pDirName, pBaseName);

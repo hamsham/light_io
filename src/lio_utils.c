@@ -8,7 +8,7 @@
 
 
 
-char* utils_str_fmt(const char* fmt, ...)
+char* lio_utils_str_fmt(const char* fmt, ...)
 {
     va_list args;
     char *pStr = NULL;
@@ -46,7 +46,7 @@ char* utils_str_fmt(const char* fmt, ...)
 
 
 
-char* utils_str_copy(const char* str, const size_t maxChars)
+char* lio_utils_str_copy(const char* str, const size_t maxChars)
 {
     if (!str)
     {
@@ -68,7 +68,7 @@ char* utils_str_copy(const char* str, const size_t maxChars)
 
 
 
-char* utils_str_concat(const char* const str1, const char* const str2)
+char* lio_utils_str_concat(const char* const str1, const char* const str2)
 {
     if (!str1 || !str2)
     {
@@ -88,7 +88,7 @@ char* utils_str_concat(const char* const str1, const char* const str2)
     if (!(char*)memcpy(pNewStr, str1, str1Size*sizeof(char))
     || !(char*)memcpy(pNewStr+str1Size, str2, str2Size*sizeof(char)))
     {
-        utils_str_destroy(pNewStr);
+        lio_utils_str_destroy(pNewStr);
         return NULL;
     }
     
@@ -97,7 +97,7 @@ char* utils_str_concat(const char* const str1, const char* const str2)
 
 
 
-void utils_str_destroy(char* const pStr)
+void lio_utils_str_destroy(char* const pStr)
 {
     free(pStr);
 }

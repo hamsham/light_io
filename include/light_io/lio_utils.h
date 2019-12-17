@@ -1,6 +1,6 @@
 
-#ifndef VTK_UTILS_C_UTILS_H
-#define VTK_UTILS_C_UTILS_H
+#ifndef LIGHT_IO_C_UTILS_H
+#define LIGHT_IO_C_UTILS_H
 
 #include <stddef.h> // size_t
 #include <float.h> // FLT_MIN, FLT_MAX
@@ -16,40 +16,40 @@ extern "C" {
 /**
  * Get the length of static arrays
  */
-#ifndef UTILS_ARRAY_LENGTH
-    #define UTILS_ARRAY_LENGTH( x ) (sizeof(x) / sizeof(x[0]))
-#endif /* UTILS_ARRAY_LENGTH */
+#ifndef LIO_UTILS_ARRAY_LENGTH
+    #define LIO_UTILS_ARRAY_LENGTH( x ) (sizeof(x) / sizeof(x[0]))
+#endif /* LIO_UTILS_ARRAY_LENGTH */
 
 
 
-#ifndef UTILS_STRINGIFY
-    #define UTILS_STRINGIFY( x ) (#x)
-#endif /* UTILS_STRINGIFY */
+#ifndef LIO_UTILS_STRINGIFY
+    #define LIO_UTILS_STRINGIFY( x ) (#x)
+#endif /* LIO_UTILS_STRINGIFY */
 
 
 
-#ifndef UTILS_CONCAT
-    #define UTILS_CONCAT( x, y ) x##y
-#endif /* UTILS_CONCAT */
+#ifndef LIO_UTILS_CONCAT
+    #define LIO_UTILS_CONCAT( x, y ) x##y
+#endif /* LIO_UTILS_CONCAT */
 
 
 
-#ifndef UTILS_MIN
-    #define UTILS_MIN( a, b ) ((a) <= (b) ? (a) : (b))
-#endif /* UTILS_MIN */
+#ifndef LIO_UTILS_MIN
+    #define LIO_UTILS_MIN( a, b ) ((a) <= (b) ? (a) : (b))
+#endif /* LIO_UTILS_MIN */
 
 
 
-#ifndef UTILS_MAX
-    #define UTILS_MAX( a, b ) ((a) >= (b) ? (a) : (b))
-#endif /* UTILS_MAX */
+#ifndef LIO_UTILS_MAX
+    #define LIO_UTILS_MAX( a, b ) ((a) >= (b) ? (a) : (b))
+#endif /* LIO_UTILS_MAX */
 
 
 
-static const uint32_t UTILS_LITTLE_ENDIAN  = 0x00000001;
-static const uint32_t UTILS_BIG_ENDIAN     = 0x01000000;
-static const uint32_t UTILS_PDP_ENDIAN     = 0x00010000;
-static const uint32_t UTILS_UNKNOWN_ENDIAN = 0xFFFFFFFF;
+static const uint32_t LIO_UTILS_LITTLE_ENDIAN  = 0x00000001;
+static const uint32_t LIO_UTILS_BIG_ENDIAN     = 0x01000000;
+static const uint32_t LIO_UTILS_PDP_ENDIAN     = 0x00010000;
+static const uint32_t LIO_UTILS_UNKNOWN_ENDIAN = 0xFFFFFFFF;
 
 
 
@@ -57,22 +57,22 @@ static const uint32_t UTILS_UNKNOWN_ENDIAN = 0xFFFFFFFF;
  * A simple function that can be used to help determine a program's endianness
  * at compile-time.
  */
-static inline uint32_t utils_get_endian_order()
+static inline uint32_t lio_utils_get_endian_order()
 {
-    if ((0xFFFFFFFF & 1) == UTILS_LITTLE_ENDIAN)
+    if ((0xFFFFFFFF & 1) == LIO_UTILS_LITTLE_ENDIAN)
     {
-        return UTILS_LITTLE_ENDIAN;
+        return LIO_UTILS_LITTLE_ENDIAN;
     }
-    else if ((0xFFFFFFFF & 1) == UTILS_BIG_ENDIAN)
+    else if ((0xFFFFFFFF & 1) == LIO_UTILS_BIG_ENDIAN)
     {
-        return UTILS_BIG_ENDIAN;
+        return LIO_UTILS_BIG_ENDIAN;
     }
-    else if ((0xFFFFFFFF & 1) == UTILS_PDP_ENDIAN)
+    else if ((0xFFFFFFFF & 1) == LIO_UTILS_PDP_ENDIAN)
     {
-        return UTILS_PDP_ENDIAN;
+        return LIO_UTILS_PDP_ENDIAN;
     }
 
-    return UTILS_UNKNOWN_ENDIAN;
+    return LIO_UTILS_UNKNOWN_ENDIAN;
 }
 
 
@@ -88,7 +88,7 @@ static inline uint32_t utils_get_endian_order()
  * The value of the input parameter with its bytes swapped between big & little
  * endian representation.
  */
-static inline uint16_t utils_btol_u16(uint16_t n)
+static inline uint16_t lio_utils_btol_u16(uint16_t n)
 {
     return (n >> 8) ^ (n << 8);
 }
@@ -106,9 +106,9 @@ static inline uint16_t utils_btol_u16(uint16_t n)
  * The value of the input parameter with its bytes swapped between big & little
  * endian representation.
  */
-static inline int16_t utils_btol_s16(int16_t n)
+static inline int16_t lio_utils_btol_s16(int16_t n)
 {
-    return (int16_t) utils_btol_u16((uint16_t) n);
+    return (int16_t) lio_utils_btol_u16((uint16_t) n);
 }
 
 
@@ -124,7 +124,7 @@ static inline int16_t utils_btol_s16(int16_t n)
  * The value of the input parameter with its bytes swapped between big & little
  * endian representation.
  */
-static inline uint32_t utils_btol_u32(uint32_t n)
+static inline uint32_t lio_utils_btol_u32(uint32_t n)
 {
     return
         (0x000000FF & (n >> 24)) ^
@@ -146,9 +146,9 @@ static inline uint32_t utils_btol_u32(uint32_t n)
  * The value of the input parameter with its bytes swapped between big & little
  * endian representation.
  */
-static inline int32_t utils_btol_s32(int32_t n)
+static inline int32_t lio_utils_btol_s32(int32_t n)
 {
-    return (int32_t) utils_btol_u32((uint32_t) n);
+    return (int32_t) lio_utils_btol_u32((uint32_t) n);
 }
 
 
@@ -164,7 +164,7 @@ static inline int32_t utils_btol_s32(int32_t n)
  * The value of the input parameter with its bytes swapped between big & little
  * endian representation.
  */
-static inline uint64_t utils_btol_u64(uint64_t n)
+static inline uint64_t lio_utils_btol_u64(uint64_t n)
 {
     return
         (0x00000000000000FF & (n >> 56)) ^
@@ -190,9 +190,9 @@ static inline uint64_t utils_btol_u64(uint64_t n)
  * The value of the input parameter with its bytes swapped between big & little
  * endian representation.
  */
-static inline int64_t utils_btol_s64(int64_t n)
+static inline int64_t lio_utils_btol_s64(int64_t n)
 {
-    return (int64_t) utils_btol_u64((uint64_t) n);
+    return (int64_t) lio_utils_btol_u64((uint64_t) n);
 }
 
 
@@ -208,7 +208,7 @@ static inline int64_t utils_btol_s64(int64_t n)
  * The value of the input parameter with its bytes swapped between big & little
  * endian representation.
  */
-static inline float utils_btol_f(float f)
+static inline float lio_utils_btol_f(float f)
 {
     float ret;
     char* pF = (char*) & f;
@@ -235,7 +235,7 @@ static inline float utils_btol_f(float f)
  * The value of the input parameter with its bytes swapped between big & little
  * endian representation.
  */
-static inline double utils_btol_d(double d)
+static inline double lio_utils_btol_d(double d)
 {
     float ret;
     char* pF = (char*) & d;
@@ -251,19 +251,19 @@ static inline double utils_btol_d(double d)
 
 
 
-char* utils_str_fmt(const char* fmt, ...);
+char* lio_utils_str_fmt(const char* fmt, ...);
 
 
 
-char* utils_str_copy(const char* str, const size_t maxChars);
+char* lio_utils_str_copy(const char* str, const size_t maxChars);
 
 
 
-char* utils_str_concat(const char* const str1, const char* const str2);
+char* lio_utils_str_concat(const char* const str1, const char* const str2);
 
 
 
-void utils_str_destroy(char* const pStr);
+void lio_utils_str_destroy(char* const pStr);
 
 
 
@@ -271,4 +271,4 @@ void utils_str_destroy(char* const pStr);
 } /* extern "C" */
 #endif
 
-#endif /* VTK_UTILS_C_UTILS_H */
+#endif /* LIGHT_IO_C_UTILS_H */

@@ -20,10 +20,10 @@
 /*-----------------------------------------------------------------------------
  * Determine what architecture is available
 -----------------------------------------------------------------------------*/
-#if VTK_UTILS_SYS_ARCH == 32
+#if LIGHT_IO_SYS_ARCH == 32
     #define STAT stat64
     #define LSTAT lstat64
-#elif VTK_UTILS_SYS_ARCH == 64
+#elif LIGHT_IO_SYS_ARCH == 64
     #define STAT stat
     #define LSTAT lstat
 #else
@@ -35,9 +35,9 @@
 /*-----------------------------------------------------------------------------
  * Check for a path on the filesystem
 -----------------------------------------------------------------------------*/
-bool path_does_exist(
+bool lio_path_does_exist(
     const char *const restrict path,
-    const enum PathType pathType)
+    const enum LioPathType pathType)
 {
     const size_t numChars = strlen(path);
     
@@ -69,19 +69,19 @@ bool path_does_exist(
     
     switch (pathType)
     {
-        case PATH_TYPE_REGULAR:
+        case LIO_PATH_TYPE_REGULAR:
             return S_ISREG(fileMode) != 0;
         
-        case PATH_TYPE_FILE:
+        case LIO_PATH_TYPE_FILE:
              return S_ISREG(fileMode) != 0 || S_ISLNK(fileMode) != 0 || S_ISBLK(fileMode) || S_ISFIFO(fileMode) != 0 || S_ISCHR(fileMode) != 0;
         
-        case PATH_TYPE_LINK:
+        case LIO_PATH_TYPE_LINK:
             return S_ISLNK(fileMode) != 0;
         
-        case PATH_TYPE_FOLDER:
+        case LIO_PATH_TYPE_FOLDER:
             return S_ISDIR(fileMode) != 0;
         
-        case PATH_TYPE_ANY:
+        case LIO_PATH_TYPE_ANY:
         default:
             break;
     }
@@ -94,7 +94,7 @@ bool path_does_exist(
 /*-----------------------------------------------------------------------------
  * Error handler for expanding a path
 -----------------------------------------------------------------------------*/
-static void _path_expand_error(const char* const restrict path, const int errCode)
+static void _lio_path_expand_error(const char* const restrict path, const int errCode)
 {
     const char* errStr = NULL;
     
@@ -133,7 +133,7 @@ static void _path_expand_error(const char* const restrict path, const int errCod
 /*-----------------------------------------------------------------------------
  * Function to expand paths (symlinks, environment vars, relative paths).
 -----------------------------------------------------------------------------*/
-char* path_resolve(const char *const restrict pInPath)
+char* lio_path_resolve(const char *const restrict pInPath)
 {
     // Expand all variables in the input path
     wordexp_t wxp;
@@ -142,7 +142,7 @@ char* path_resolve(const char *const restrict pInPath)
     
     if (errCode != 0)
     {
-        _path_expand_error(pInPath, errCode);
+        _lio_path_expand_error(pInPath, errCode);
         wordfree(&wxp);
         return NULL;
     }
@@ -204,7 +204,7 @@ char* path_resolve(const char *const restrict pInPath)
 /*-------------------------------------
  * Callback function to remove a path recursively
 ------------------------------------*/
-static int _path_recursive_remove(
+static int _lio_path_recursive_remove(
     const char* inPath,
     const struct stat* pUnusedStat,
     int fileType, struct FTW* pUnusedFtw)
@@ -247,12 +247,12 @@ static int _path_recursive_remove(
 /*-------------------------------------
  * Recursively remove a path
 ------------------------------------*/
-bool path_remove(
+bool lio_path_remove(
     const char* const restrict path,
     const bool recurse,
     bool followLinks)
 {
-    if (path_does_exist(path, PATH_TYPE_FILE))
+    if (lio_path_does_exist(path, LIO_PATH_TYPE_FILE))
     {
         if (!remove(path))
         {
@@ -262,7 +262,7 @@ bool path_remove(
         return true;
     }
     
-    if (!recurse && path_does_exist(path, PATH_TYPE_FOLDER))
+    if (!recurse && lio_path_does_exist(path, LIO_PATH_TYPE_FOLDER))
     {
         if (rmdir(path) != 0)
         {
@@ -273,7 +273,7 @@ bool path_remove(
     
     const int walkFlags = FTW_DEPTH | (followLinks ? 0 : FTW_PHYS);
     
-    return nftw(path, &_path_recursive_remove, 1, walkFlags) == 0;
+    return nftw(path, &_lio_path_recursive_remove, 1, walkFlags) == 0;
 }
 
 
@@ -281,7 +281,7 @@ bool path_remove(
 /*-----------------------------------------------------------------------------
     MKDIR
 -----------------------------------------------------------------------------*/
-bool path_mkdirs(const char* const restrict pPath)
+bool lio_path_mkdirs(const char* const restrict pPath)
 {
     static const mode_t permissions = 0 \
         | S_IRGRP | S_IWGRP | S_IXGRP \
@@ -293,7 +293,7 @@ bool path_mkdirs(const char* const restrict pPath)
         return false;
     }
 
-    char* const pTmpPath = utils_str_copy(pPath, 0); //path_resolve(pPath);
+    char* const pTmpPath = lio_utils_str_copy(pPath, 0); //lio_path_resolve(pPath);
     /*
     if (!pTmpPath)
     {
@@ -307,7 +307,7 @@ bool path_mkdirs(const char* const restrict pPath)
     for(char* p = pDir+1; *p; p++)
     {
         // Detect if a path needs to be made by checking for a trailing slash
-        if(*p != PATH_SEPARATOR)
+        if(*p != LIO_PATH_SEP)
         {
             continue;
         }
@@ -316,18 +316,18 @@ bool path_mkdirs(const char* const restrict pPath)
         // a null-termination and only create a path up to that point.
         *p = '\0';
         
-        if (!path_does_exist(pDir, PATH_TYPE_FOLDER))
+        if (!lio_path_does_exist(pDir, LIO_PATH_TYPE_FOLDER))
         {
             if (mkdir(pDir, permissions) != 0)
             {
                 fprintf(stderr, "Cannot create parent directory: %s\n", pDir);
-                path_destroy(pTmpPath);
+                lio_path_destroy(pTmpPath);
                 return false;
             }
         }
         
         // return the trailing slash to its normal state.
-        *p = PATH_SEPARATOR;
+        *p = LIO_PATH_SEP;
     }
     
     // create the final directory in a path
@@ -338,8 +338,8 @@ bool path_mkdirs(const char* const restrict pPath)
         fprintf(stderr, "Cannot create directory: %s\n", pDir);
     }
     
-    //path_destroy(pTmpPath);
-    utils_str_destroy(pTmpPath);
+    //lio_path_destroy(pTmpPath);
+    lio_utils_str_destroy(pTmpPath);
     
     return ret == 0;
 }
@@ -349,7 +349,7 @@ bool path_mkdirs(const char* const restrict pPath)
 /*-----------------------------------------------------------------------------
  * get a path listing
 -----------------------------------------------------------------------------*/
-char** path_list(
+char** lio_path_list(
     const char* const baseDir,
     const bool listHidden,
     bool (*filter)(const char* const),
@@ -359,13 +359,13 @@ char** path_list(
     struct dirent* pEntry;
     DIR* pDir = NULL;
     unsigned iter = 0;
-    const unsigned numEntries = path_count_entries(baseDir, listHidden, filter);
+    const unsigned numEntries = lio_path_count_entries(baseDir, listHidden, filter);
     char** const ret = (char**)calloc(numEntries, sizeof(char*));
 
     // make sure we have the full path to avoid errors in enumeration
     if (ret == NULL
-    || (baseDirectory = path_resolve(baseDir)) == NULL
-    || path_does_exist(baseDirectory, PATH_TYPE_FOLDER) == false)
+    || (baseDirectory = lio_path_resolve(baseDir)) == NULL
+    || lio_path_does_exist(baseDirectory, LIO_PATH_TYPE_FOLDER) == false)
     {
         fprintf(stderr, "Unable to resolve the directory \"%s\" for reading.\n", baseDir);
         closedir(pDir);
@@ -376,7 +376,7 @@ char** path_list(
     {
         fprintf(stderr, "Failed to open the directory \"%s\" for reading.\n", baseDir);
         closedir(pDir);
-        path_destroy(baseDirectory);
+        lio_path_destroy(baseDirectory);
         return false;
     }
 
@@ -398,7 +398,7 @@ char** path_list(
         }
 
         // concatenate full paths to avoid read errors
-        char* const fullPath = utils_str_fmt("%s%c%s", baseDirectory, PATH_SEPARATOR, entry);
+        char* const fullPath = lio_utils_str_fmt("%s%c%s", baseDirectory, LIO_PATH_SEP, entry);
         if (!fullPath)
         {
             fprintf(stderr, "Failed to concatenate the paths \"%s\" and \"%s\".\n", baseDirectory, entry);
@@ -413,7 +413,7 @@ char** path_list(
     }
 
     closedir(pDir);
-    path_destroy(baseDirectory);
+    lio_path_destroy(baseDirectory);
 
     *pOutNumEntries = iter;
 
@@ -425,7 +425,7 @@ char** path_list(
 /*-----------------------------------------------------------------------------
  * Count the number of entries in a directory
 -----------------------------------------------------------------------------*/
-unsigned path_count_entries(
+unsigned lio_path_count_entries(
     const char* const baseDir,
     const bool listHidden,
     bool (*filter)(const char* const))
@@ -436,8 +436,8 @@ unsigned path_count_entries(
     unsigned numEntries = 0;
 
     // make sure we have the full path to avoid errors in enumeration
-    if ((baseDirectory = path_resolve(baseDir)) == NULL
-    || path_does_exist(baseDirectory, PATH_TYPE_FOLDER) == false)
+    if ((baseDirectory = lio_path_resolve(baseDir)) == NULL
+    || lio_path_does_exist(baseDirectory, LIO_PATH_TYPE_FOLDER) == false)
     {
         fprintf(stderr, "Unable to resolve the directory \"%s\" for reading.\n", baseDir);
         closedir(pDir);
@@ -448,7 +448,7 @@ unsigned path_count_entries(
     {
         fprintf(stderr, "Failed to open the directory \"%s\" for reading.\n", baseDir);
         closedir(pDir);
-        path_destroy(baseDirectory);
+        lio_path_destroy(baseDirectory);
         return UINT_MAX;
     }
 
@@ -470,7 +470,7 @@ unsigned path_count_entries(
         }
 
         // concatenate full paths to avoid read errors
-        char* const fullPath = utils_str_fmt("%s%c%s", baseDirectory, PATH_SEPARATOR, entry);
+        char* const fullPath = lio_utils_str_fmt("%s%c%s", baseDirectory, LIO_PATH_SEP, entry);
         if (!fullPath)
         {
             fprintf(stderr, "Failed to concatenate the paths \"%s\" and \"%s\".\n", baseDirectory, entry);
@@ -483,11 +483,11 @@ unsigned path_count_entries(
             ++numEntries;
         }
 
-        path_destroy(fullPath);
+        lio_path_destroy(fullPath);
     }
 
     closedir(pDir);
-    path_destroy(baseDirectory);
+    lio_path_destroy(baseDirectory);
 
     return numEntries;
 }
@@ -497,19 +497,19 @@ unsigned path_count_entries(
 /*-----------------------------------------------------------------------------
  * Move a file or folder
 -----------------------------------------------------------------------------*/
-int path_move(
+int lio_path_move(
     const char* const restrict pFrom,
     const char* const restrict pTo,
     const bool overwrite)
 {
     // move directories
-    if (path_does_exist(pFrom, PATH_TYPE_FOLDER))
+    if (lio_path_does_exist(pFrom, LIO_PATH_TYPE_FOLDER))
     {
-        if (path_does_exist(pTo, PATH_TYPE_FOLDER))
+        if (lio_path_does_exist(pTo, LIO_PATH_TYPE_FOLDER))
         {
             if (overwrite)
             {
-                path_remove(pTo, true, false);
+                lio_path_remove(pTo, true, false);
             }
             else
             {
@@ -519,13 +519,13 @@ int path_move(
 
         return rename(pFrom, pTo);
     }
-    else if (path_does_exist(pFrom, PATH_TYPE_FILE))
+    else if (lio_path_does_exist(pFrom, LIO_PATH_TYPE_FILE))
     {
-        if (path_does_exist(pTo, PATH_TYPE_FILE))
+        if (lio_path_does_exist(pTo, LIO_PATH_TYPE_FILE))
         {
             if (overwrite)
             {
-                path_remove(pTo, false, false);
+                lio_path_remove(pTo, false, false);
             }
             else
             {

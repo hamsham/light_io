@@ -1,6 +1,6 @@
 
-#ifndef VTK_UTILS_PATHS_H
-#define VTK_UTILS_PATHS_H
+#ifndef LIGHT_IO_PATHS_H
+#define LIGHT_IO_PATHS_H
 
 #include <stdbool.h>
 
@@ -11,9 +11,9 @@ extern "C" {
 
 
 #ifdef _WIN32
-    #define PATH_SEPARATOR '\\'
+    #define LIO_PATH_SEP '\\'
 #else
-    #define PATH_SEPARATOR '/'
+    #define LIO_PATH_SEP '/'
 #endif
 
 
@@ -22,13 +22,13 @@ extern "C" {
  * @brief Enumeration which can be used to filter or request certain types of
  * paths from the path functions.
  */
-enum PathType
+enum LioPathType
 {
-    PATH_TYPE_ANY,     // Any type of thing that exists on the file system
-    PATH_TYPE_REGULAR, // Files only, no links
-    PATH_TYPE_FILE,    // Files or links to files
-    PATH_TYPE_LINK,    // Links only
-    PATH_TYPE_FOLDER   // directories
+    LIO_PATH_TYPE_ANY,     // Any type of thing that exists on the file system
+    LIO_PATH_TYPE_REGULAR, // Files only, no links
+    LIO_PATH_TYPE_FILE,    // Files or links to files
+    LIO_PATH_TYPE_LINK,    // Links only
+    LIO_PATH_TYPE_FOLDER   // directories
 };
 
 
@@ -47,9 +47,9 @@ enum PathType
  * @return TRUE if the file entry represented by "path" exists on the local
  * filesystem, FALSE if not.
  */
-bool path_does_exist(
+bool lio_path_does_exist(
     const char* const path,
-    const enum PathType pathType);
+    const enum LioPathType pathType);
 
 
 
@@ -63,9 +63,9 @@ bool path_does_exist(
  * @return A dynamically allocated string which contains the full, expanded path
  * if one exists on the local filesystem. Returns NULL if the path was not
  * found. The returned value will be no longer than PATH_MAX and must be freed
- * with "path_destroy*()".
+ * with "lio_path_destroy*()".
  */
-char* path_resolve(const char* const pInPath);
+char* lio_path_resolve(const char* const pInPath);
 
 
 
@@ -79,7 +79,7 @@ char* path_resolve(const char* const pInPath);
  * @return A dynamically-allocated string which contains the exact same path as
  * the input string.
  */
-char* path_copy(const char* const pInPath);
+char* lio_path_copy(const char* const pInPath);
 
 
 
@@ -91,7 +91,7 @@ char* path_copy(const char* const pInPath);
  * A dynamically allocated string which was returned from one of the path
  * utility functions.
  */
-void path_destroy(char* const pPath);
+void lio_path_destroy(char* const pPath);
 
 
 
@@ -106,7 +106,7 @@ void path_destroy(char* const pPath);
  * @param
  * Contains the number of paths in the array to destroy.
  */
-void paths_destroy(char** const pPaths, unsigned numPaths);
+void lio_paths_destroy(char** const pPaths, unsigned numPaths);
 
 
 
@@ -128,7 +128,7 @@ void paths_destroy(char** const pPaths, unsigned numPaths);
  *
  * @return TRUE if the path could successfully be removed, FALSE if not.
  */
-bool path_remove(
+bool lio_path_remove(
     const char* const path,
     const bool recurse,
     bool followLinks);
@@ -145,7 +145,7 @@ bool path_remove(
  * @return
  * TRUE if the directory tree could be made, FALSE if not.
  */
-bool path_mkdirs(const char* const pPath);
+bool lio_path_mkdirs(const char* const pPath);
 
 
 
@@ -154,17 +154,17 @@ bool path_mkdirs(const char* const pPath);
  *
  * This fucntion will return the last component in a path. All leading path
  * names will be removed and a newly allocated string is returned. The return
- * value should be deleted with 'path_destroy()' when it is no longer being
+ * value should be deleted with 'lio_path_destroy()' when it is no longer being
  * used.
  *
  * @param pPath
  * A full or relative path to an entry on the local filesystem.
  *
  * @return A newly allocated string, containing the basename of a path (or NULL
- * if an error occurred). This string should be deleted with 'path_destroy()'
+ * if an error occurred). This string should be deleted with 'lio_path_destroy()'
  * when it is no longer being used.
  */
-char* path_basename(const char* const pPath);
+char* lio_path_basename(const char* const pPath);
 
 
 
@@ -177,10 +177,10 @@ char* path_basename(const char* const pPath);
  *
  * @return A newly allocated string which contains all but the final component
  * of the input path string. A value of NULL is returned if an error occurred.
- * The return value should be deleted with "path_destroy()" when it is no
+ * The return value should be deleted with "lio_path_destroy()" when it is no
  * longer being used.
  */
-char* path_dirname(const char* const pPath);
+char* lio_path_dirname(const char* const pPath);
 
 
 /**
@@ -209,7 +209,7 @@ char* path_dirname(const char* const pPath);
  * An array of strings, each containing the full path to a file or folder on
  * the local filesystem which is an immediate descendant of the input path.
  */
-char** path_list(
+char** lio_path_list(
     const char* const baseDir,
     const bool listHidden,
     bool (*filter)(const char* const),
@@ -237,7 +237,7 @@ char** path_list(
  * contained within 'baseDir'. A value of UINT_MAX is returned in the event of
  * an error.
  */
-unsigned path_count_entries(
+unsigned lio_path_count_entries(
     const char* const baseDir,
     const bool listHidden,
     bool (*filter)(const char* const));
@@ -262,7 +262,7 @@ unsigned path_count_entries(
  * @return A dynamically allocated string, containing the concatenation of the
  * input parameters.
  */
-char* path_join(
+char* lio_path_join(
     const char* const pDirName,
     const char* const pBaseName);
 
@@ -279,9 +279,9 @@ char* path_join(
  *
  * @return TRUE if the path exists, FALSE if not.
  */
-static inline bool path_filter_all(const char* const fullPath)
+static inline bool lio_path_filter_all(const char* const fullPath)
 {
-    return path_does_exist(fullPath, PATH_TYPE_ANY);
+    return lio_path_does_exist(fullPath, LIO_PATH_TYPE_ANY);
 }
 
 /**
@@ -292,9 +292,9 @@ static inline bool path_filter_all(const char* const fullPath)
  *
  * @return TRUE if the file exists, FALSE if not.
  */
-static inline bool path_filter_files(const char* const filePath)
+static inline bool lio_path_filter_files(const char* const filePath)
 {
-    return path_does_exist(filePath, PATH_TYPE_FILE);
+    return lio_path_does_exist(filePath, LIO_PATH_TYPE_FILE);
 }
 
 /**
@@ -305,9 +305,9 @@ static inline bool path_filter_files(const char* const filePath)
  *
  * @return TRUE if the folder exists, FALSE if not.
  */
-static inline bool path_filter_dirs(const char* const dirPath)
+static inline bool lio_path_filter_dirs(const char* const dirPath)
 {
-    return path_does_exist(dirPath, PATH_TYPE_FOLDER);
+    return lio_path_does_exist(dirPath, LIO_PATH_TYPE_FOLDER);
 }
 
 
@@ -327,7 +327,7 @@ static inline bool path_filter_dirs(const char* const dirPath)
  *
  * @return 0 on success or nonzero if an error occurred.
  */
-int path_move(
+int lio_path_move(
     const char* const pFrom,
     const char* const pTo,
     const bool overwrite);
@@ -338,4 +338,4 @@ int path_move(
 } /* extern "C" */
 #endif
 
-#endif /* VTK_UTILS_PATHS_H */
+#endif /* LIGHT_IO_PATHS_H */

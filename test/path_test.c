@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 
     // Test that files can be found on the local file system
     ++testId;
-    if (!path_does_exist(argv[0], PATH_TYPE_FILE))
+    if (!lio_path_does_exist(argv[0], LIO_PATH_TYPE_FILE))
     {
         fprintf(stderr, "Unable to validate the current program path \"%s.\"\n", argv[0]);
         ret = testId;
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
 
     // Test that directories can be extracted from a path.
     ++testId;
-    pCwd = path_dirname(argv[0]);
+    pCwd = lio_path_dirname(argv[0]);
     if (!pCwd)
     {
         fprintf(stderr, "Unable to determine the directory name of \"%s.\"\n", argv[0]);
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 
     // Test that base names can be extracted from a path.
     ++testId;
-    pExc = path_basename(argv[0]);
+    pExc = lio_path_basename(argv[0]);
     if (!pExc)
     {
         fprintf(stderr, "Unable to determine the base name of \"%s.\"\n", argv[0]);
@@ -63,9 +63,9 @@ int main(int argc, char* argv[])
 
     // Test that directory trees can be enumerated
     ++testId;
-    numChildPaths = path_count_entries(pCwd, false, NULL);
+    numChildPaths = lio_path_count_entries(pCwd, false, NULL);
     printf("File Listing of %u items:", numChildPaths);
-    pSiblings = path_list(pCwd, false, NULL, &numChildPaths);
+    pSiblings = lio_path_list(pCwd, false, NULL, &numChildPaths);
     for (i = 0u; i < numChildPaths; ++i)
     {
         printf("\n\t%s", pSiblings[i]);
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 
     // Test that paths can be concatenated
     ++testId;
-    tmpDirStr = utils_str_fmt("super%ccali%cfragi%clistic%cexpi%cali%cdocious", PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR, PATH_SEPARATOR);
+    tmpDirStr = lio_utils_str_fmt("super%ccali%cfragi%clistic%cexpi%cali%cdocious", LIO_PATH_SEP, LIO_PATH_SEP, LIO_PATH_SEP, LIO_PATH_SEP, LIO_PATH_SEP, LIO_PATH_SEP);
     if (!tmpDirStr)
     {
         fprintf(stderr, "Unable to create a new path string.\n");
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
 
     // Test that path strings can be concatenated
     ++testId;
-    newSubDir = path_join(pCwd, tmpDirStr);
+    newSubDir = lio_path_join(pCwd, tmpDirStr);
     if (!newSubDir)
     {
         fprintf(stderr, "Unable to join the file paths \"%s\" and \"%s.\"\n", pCwd, tmpDirStr);
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 
     // Test that paths can be recursively created
     ++testId;
-    if (!path_mkdirs(newSubDir))
+    if (!lio_path_mkdirs(newSubDir))
     {
         fprintf(stderr, "Unable to create the directory tree \"%s.\"", newSubDir);
         ret = testId;
@@ -122,7 +122,7 @@ int main(int argc, char* argv[])
 
     // Test that paths can be identified on the local file system
     ++testId;
-    if (!path_does_exist(newSubDir, PATH_TYPE_FOLDER))
+    if (!lio_path_does_exist(newSubDir, LIO_PATH_TYPE_FOLDER))
     {
         fprintf(stderr, "Unable to validate the directory tree \"%s.\"\n", newSubDir);
         ret = testId;
@@ -135,22 +135,22 @@ int main(int argc, char* argv[])
 
     // Test that paths can be moved
     ++testId;
-    superDir = path_join(pCwd, "super");
-    duperDir = path_join(pCwd, "duper");
-    if (!superDir || !duperDir || path_move(superDir, duperDir, false) != 0)
+    superDir = lio_path_join(pCwd, "super");
+    duperDir = lio_path_join(pCwd, "duper");
+    if (!superDir || !duperDir || lio_path_move(superDir, duperDir, false) != 0)
     {
-        fprintf(stderr, "Unable to move a directory: \"%s%c%s\" -> \"%s%c%s\"\n", pCwd, PATH_SEPARATOR, "super", pCwd, PATH_SEPARATOR, "duper");
+        fprintf(stderr, "Unable to move a directory: \"%s%c%s\" -> \"%s%c%s\"\n", pCwd, LIO_PATH_SEP, "super", pCwd, LIO_PATH_SEP, "duper");
         ret = testId;
         goto end;
     }
     else
     {
-        printf("Successfully moved a directory:\n\t\"%s%c%s\" -> \"%s%c%s\"\n", pCwd, PATH_SEPARATOR, "super", pCwd, PATH_SEPARATOR, "duper");
+        printf("Successfully moved a directory:\n\t\"%s%c%s\" -> \"%s%c%s\"\n", pCwd, LIO_PATH_SEP, "super", pCwd, LIO_PATH_SEP, "duper");
     }
 
     // Test that paths can be removed from the local file system
     ++testId;
-    if (!path_remove(duperDir, true, false))
+    if (!lio_path_remove(duperDir, true, false))
     {
         fprintf(stderr, "Unable to remove the directory tree \"%s.\"\n", duperDir);
         ret = testId;
@@ -162,13 +162,13 @@ int main(int argc, char* argv[])
     }
 
     end:
-    utils_str_destroy(tmpDirStr);
-    path_destroy(duperDir);
-    path_destroy(superDir);
-    path_destroy(newSubDir);
-    paths_destroy(pSiblings, numChildPaths);
-    path_destroy(pExc);
-    path_destroy(pCwd);
+    lio_utils_str_destroy(tmpDirStr);
+    lio_path_destroy(duperDir);
+    lio_path_destroy(superDir);
+    lio_path_destroy(newSubDir);
+    lio_paths_destroy(pSiblings, numChildPaths);
+    lio_path_destroy(pExc);
+    lio_path_destroy(pCwd);
 
     return ret;
 }

@@ -1,6 +1,6 @@
 
-#ifndef VTK_UTILS_FILE_IO_H
-#define VTK_UTILS_FILE_IO_H
+#ifndef LIGHT_IO_FILE_IO_H
+#define LIGHT_IO_FILE_IO_H
 
 #include <stdbool.h>
 
@@ -10,21 +10,21 @@ extern "C" {
 
 
 
-enum FileIOLimitsType
+enum LioFileLimitsType
 {
-    FILE_IO_DEFAULT_CHUNK_SIZE = 4096 // KB
+    LIO_FILE_DEFAULT_CHUNK_SIZE = 4096 // KB
 };
 
 
 
-bool fileio_copy(
+bool lio_file_copy(
     const char* const pFrom,
     const char* const pTo,
     const bool overwrite);
 
 
 
-bool fileio_concat(
+bool lio_file_concat(
     const char* const fileA,
     const char* const fileB,
     const char* const outFile,
@@ -36,4 +36,4 @@ bool fileio_concat(
 } /* extern "C" */
 #endif
 
-#endif /* VTK_UTILS_FILE_IO_H */
+#endif /* LIGHT_IO_FILE_IO_H */
