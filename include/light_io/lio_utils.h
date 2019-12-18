@@ -54,20 +54,20 @@ static const uint32_t LIO_UTILS_UNKNOWN_ENDIAN = 0xFFFFFFFF;
 
 
 /**
- * A simple function that can be used to help determine a program's endianness
- * at compile-time.
+ * A simple function that can be used to help determine a program's
+ * endianness.
  */
 static inline uint32_t lio_utils_get_endian_order()
 {
-    if ((0xFFFFFFFF & 1) == LIO_UTILS_LITTLE_ENDIAN)
+    if (((const char*)&LIO_UTILS_LITTLE_ENDIAN)[0] == 1)
     {
         return LIO_UTILS_LITTLE_ENDIAN;
     }
-    else if ((0xFFFFFFFF & 1) == LIO_UTILS_BIG_ENDIAN)
+    else if (((const char*)&LIO_UTILS_BIG_ENDIAN)[0] == 1)
     {
         return LIO_UTILS_BIG_ENDIAN;
     }
-    else if ((0xFFFFFFFF & 1) == LIO_UTILS_PDP_ENDIAN)
+    else if (((const char*)&LIO_UTILS_PDP_ENDIAN)[0] == 1)
     {
         return LIO_UTILS_PDP_ENDIAN;
     }
